@@ -1,0 +1,78 @@
+  _____             _                      _       _____  _____  
+  / ____|           | |                    | |     / ____||  __ \ 
+ | |     _   _  ___ | |_  ___   _ __ ___   | |    | |     | |  | |
+ | |    | | | |/ __|| __|/ _ \ | '_ ` _ \  | |    | |     | |  | |
+ | |____| |_| |\__ \| |_| (_) || | | | | | | |____| |____ | |__| |
+  \_____|\__,_||___/ \__|\___/ |_| |_| |_| |______|\_____||_____/     v1.0
+                                                                  
+                                                                  
+-------------------------------------------------------------------------------------
+
+##BLOCK DIAGRAM##
+------------------
+          ┌────────────────────────────────────────┐
+          │     CUSTOM ALPHA-NUMERIC DISPLAY       │
+          ├────────────────────────────────────────┼───────┬───┐
+          │                                        │       │ T │
+          │                                        │ CAN   │ I │      TX
+          │                                        │ Module│   ├──────────────────►
+          │                                        │       │ S │ from multi sensor
+          │       Telemetry data display from      │ Read  │ N │ module
+          │                                        │ only  │ 6 │◄──────────────────
+          │                SENSORS                 │ mode  │ 5 │      RX
+          │                                        │       │ x │
+          │                                        │       │ x │
+          ├────────────────────────────────────────┼───────┴───┘
+          │            Custom msg space            │
+          │                                        │
+          ├────────────────────────────────────────┤
+┌─────────┤           ESP32 Controller             ├─────────┐
+│         └────────────────────────────────────────┘         │IOT
+│                                                            │BLYNK SERVER
+│                                                            │via MQTT
+▼ local server                                               │
+  via http                                                   ▼
+
+
+Project goal
+------------
+>> Upgrading old custom alpha numeric display with modern features.
+
+Project breakdown:
+------------------
+> Upgrading Sensor comm. link to CAN BUS for better noise immunity.
+
+> Decoding CAN data from .json format to be displayed
+
+> Adding a feature to display a custom msg which can be send wirelessly to the display 
+  board from an IOT platform (BLYNK)
+
+> Create a local esp32 based server which displays the current readings of the sensors
+
+> Connecting the esp32 controller module with the lcd panel controller via I2C link
+
+> Writing I2C driver for the lcd panel
+
+
+---------------------------------------------------------------------------------
+
+##Creating the BLYNK IOT comm link
+-----------------------------------
+
+┌───┐
+│   │                         ┌────────────┐
+│ L │     ┌───────────┐       │  BLYNK     │
+│   │     │           │       │  IOT       │
+│ C │◄────┤ESP 32     │◄─────►│  CLOUD     │
+│   │     │controller │       │            │
+│ D │     │           │       │            │
+│   │     └───────────┘       └────────────┘
+└───┘                               ▲
+                                    │
+                                    │
+                                    │
+                                    │
+                                    ▼
+                           ┌─────────────────┐
+                           │ BLYNK IOT app   │
+                           └─────────────────┘
