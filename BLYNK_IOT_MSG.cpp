@@ -1,9 +1,9 @@
 /*****************************************
-* Capture string from BLYNK IOT platform  
+* Capture string from BLYNK IOT platform
 * and display it on the serial prompt
-* This data would be finally displayed in 
+* This data would be finally displayed in
 * the LCD as a custom msg recieved from the
-* cloud
+* cloud using a custom driver------------
 * version 1.0  -- Dipayan Pal*************
 ******************************************/
 
