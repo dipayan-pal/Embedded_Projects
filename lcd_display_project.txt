@@ -76,3 +76,9 @@ Project breakdown:
                            ┌─────────────────┐
                            │ BLYNK IOT app   │
                            └─────────────────┘
+
+> Create a terminal widget in the BLYNK mobile app
+> Push text string from the terminal 
+> The text string is sent to the cloud from the app
+> This then gets downloaded to the ESP32 module via MQTT protocol
+> This string is sent to the lcd msg_display function to be displayed
