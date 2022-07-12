@@ -1,0 +1,101 @@
+---------------------------------------------------------------------------
+   _____ _______    _______ ______   __  __            _     _            
+  / ____|__   __|/\|__   __|  ____| |  \/  |          | |   (_)           
+ | (___    | |  /  \  | |  | |__    | \  / | __ _  ___| |__  _ _ __   ___ 
+  \___ \   | | / /\ \ | |  |  __|   | |\/| |/ _` |/ __| '_ \| | '_ \ / _ \
+  ____) |  | |/ ____ \| |  | |____  | |  | | (_| | (__| | | | | | | |  __/
+ |_____/   |_/_/    \_\_|  |______| |_|  |_|\__,_|\___|_| |_|_|_| |_|\___|
+                                                                          
+---------------------------------------------------------------------------                                                                          
+
+
+## MEMS Sensor + micro-heater Sensing Module -- A state based (event driven) approach ::
+----------------------------------------------------------------------------------------
+
+# Requirement:
+-------------
+> Mems based (methane) gas sensor that gives accurate reading when sample is within a certain temp range
+> A micro-heating module is used to raise the temp of the sample
+> The sample is initailly introduced to the sensor module by induced air pushed via a fan.
+> Once the micro-heater has attained proper operating temp the reading from the sensor module is taken
+> The critical temp balance (heat loss occurs due to conduction, convection) is mainted by a PID algorithm 
+
+# Hardware implementation:
+--------------------------
+
+> Hardware breakdown :
+	1. Mems Sensor + micro heater --> A dual package enclosed module
+	2. Power Supply unit for different sections of the system
+	3. Signal conditioning circuitry for the sensor module 
+	4. The processing and controller unit which runs the State Machine and the PID algorithm 
+		>> The Processing unit is a ESP32 dev kit controller
+		>> It's a 32 bit update from the 16 bit controller 
+		>> Has adequate number of ADC to check various parameters of the system 
+		>> It has built-in WiFi module and a full TCP library to utilize various TCP protocol to send data
+		>> The reading from the module is transmitted via websocket to any listening client
+			>>> The ESP module creates a TCP server at a port
+			>>> The client connects to that port and gets the sensor data streaming in 
+      
+# State Transition diagram:
+---------------------------
+    ┌───────┐
+    │ START ├────────┐
+    └───────┘        │
+                     ▼
+    volt error  ┌───────────┐ volt ok
+    ┌───────────┤CHECK NODE ├─────────┐
+    │           │  VOLTAGE  │         │
+    ▼           └───────────┘         ▼
+┌────────┐    fan error           ┌─────────┐
+│ ERROR  │◄───────────────────┐   │ TURN ON │                                                                                >
+│ STATE  │                    │   │ BLOWER  │
+└────────┘ ◄────┐             │   └────┬────┘
+                │             │        │
+                │             │        ▼
+                │             │ ┌───────────────┐
+                │             └─┤CHECK ROTATION │
+                │               └──────┬────────┘
+                │u-heater              │ fan OK
+                │  error               ▼
+                │                 ┌──────────┐
+                │                 │ TURN ON  │
+                │                 │ u-HEATER │
+                │                 └────┬─────┘
+                │                      │
+                │                      ▼
+             ┌──┴──┐              ┌──────────┐
+             │CHECK│◄─────────────┤TIME DELAY│
+             │TEMP │              └──────────┘
+             └──┬──┘
+                │  heater OK
+        ┌───────▼──────┐
+        │SENSOR READING│
+        └──────────────┘
+
+Every Sate Machine has a transition diagram that depicts various states and switching conditions
+
+> START                 >>      The system starts the state machine
+
+> Voltage Check         >>      The controler checks the voltages at various nodes in the system
+                                System as a wide voltage range 3.3V, 5V, 12V 
+                                The system checks the voltage rails and reports any error before
+                                proceeding to the other states.
+                                If there is a discrepancy in the volatge reading the system goes
+                                to an error state which is transmited to let the end user know.
+                                If al voltages are OK, system proceeds to the next state.
+
+> Turn Blower           >>      The fan controller circuit is triggered 
+
+> Check fan rotation    >>      The controller checks whether the fan is actually rotating.
+                                When the fan rotates wind flaps pushes a toggle NO switch.
+                                If the toggle switch doesn't trigger, then the system goes
+                                back to the error state.
+                                If fan rotates system proceeds to the next state.
+
+> Turn micro-heater     >>      The micro-heater circuit is triggered.
+                                The system waits for a stipulated time for temp rise
+
+> Temp check            >>      The temp of the micro-heater is sensed and compared
+                                with a pre-defined range.
+                                If temp it out of range, system goes to the error state
+                                If temp is within range, Sensor reading is taken.
