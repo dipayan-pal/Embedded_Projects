@@ -74,28 +74,30 @@
 
 Every Sate Machine has a transition diagram that depicts various states and switching conditions
 
-> START                 >>      The system starts the state machine
-
-> Voltage Check         >>      The controler checks the voltages at various nodes in the system
-                                System as a wide voltage range 3.3V, 5V, 12V 
-                                The system checks the voltage rails and reports any error before
-                                proceeding to the other states.
-                                If there is a discrepancy in the volatge reading the system goes
-                                to an error state which is transmited to let the end user know.
-                                If al voltages are OK, system proceeds to the next state.
-
-> Turn Blower           >>      The fan controller circuit is triggered 
-
-> Check fan rotation    >>      The controller checks whether the fan is actually rotating.
-                                When the fan rotates wind flaps pushes a toggle NO switch.
-                                If the toggle switch doesn't trigger, then the system goes
-                                back to the error state.
-                                If fan rotates system proceeds to the next state.
-
-> Turn micro-heater     >>      The micro-heater circuit is triggered.
-                                The system waits for a stipulated time for temp rise
-
-> Temp check            >>      The temp of the micro-heater is sensed and compared
-                                with a pre-defined range.
-                                If temp it out of range, system goes to the error state
-                                If temp is within range, Sensor reading is taken.
+┌────────────────────────┬────────────────────────────────────────────────────────────────────────┐
+│ START                  │      The system starts the state machine                               │
+├────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Voltage Check          │      The controler checks the voltages at various nodes in the system  │
+│                        │      System as a wide voltage range 3.3V, 5V, 12V                      │
+│                        │      The system checks the voltage rails and reports any error before  │
+│                        │      proceeding to the other states.                                   │
+│                        │      If there is a discrepancy in the volatge reading the system goes  │
+│                        │      to an error state which is transmited to let the end user know.   │
+│                        │      If al voltages are OK, system proceeds to the next state.         │
+├────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Turn Blower            │      The fan controller circuit is triggered                           │
+├────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Check fan rotation     │      The controller checks whether the fan is actually rotating.       │
+│                        │      When the fan rotates wind flaps pushes a toggle NO switch.        │
+│                        │      If the toggle switch doesn't trigger, then the system goes        │
+│                        │      back to the error state.                                          │
+│                        │      If fan rotates system proceeds to the next state.                 │
+├────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Turn micro-heater      │      The micro-heater circuit is triggered.                            │
+│                        │      The system waits for a stipulated time for temp rise              │
+├────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Temp check             │      The temp of the micro-heater is sensed and compared               │
+│                        │      with a pre-defined range.                                         │
+│                        │      If temp it out of range, system goes to the error state           │
+│                        │      If temp is within range, Sensor reading is taken.                 │
+└────────────────────────┴────────────────────────────────────────────────────────────────────────┘
